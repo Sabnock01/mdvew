@@ -1,0 +1,18 @@
+[package]
+name = "mdvew"
+version = "0.1.0"
+edition = "2021"
+description = "Render markdown files as images in the terminal"
+license = "MIT"
+repository = "https://github.com/Sabnock01/mdvew"
+keywords = ["markdown", "terminal", "cli", "preview"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+base64 = "0.22"
+clap = { version = "4.5", features = ["derive"] }
+headless_chrome = "1.0"
+image = { version = "0.25", default-features = false, features = ["png"] }
+pulldown-cmark = "0.11"
+thiserror = "2.0"
+viuer = "0.11"
