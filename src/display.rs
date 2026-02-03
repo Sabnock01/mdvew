@@ -12,16 +12,18 @@ pub fn save_to_file(screenshot_bytes: &[u8], output_path: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn open_in_browser(html_path: &str) {
+pub fn open_in_browser(html_path: &Path) {
+    let path_str = html_path.display().to_string();
+
     #[cfg(target_os = "linux")]
-    let _ = Command::new("xdg-open").arg(html_path).spawn();
+    let _ = Command::new("xdg-open").arg(&path_str).spawn();
 
     #[cfg(target_os = "macos")]
-    let _ = Command::new("open").arg(html_path).spawn();
+    let _ = Command::new("open").arg(&path_str).spawn();
 
     #[cfg(target_os = "windows")]
     let _ = Command::new("cmd")
-        .args(["/C", "start", html_path])
+        .args(["/C", "start", &path_str])
         .spawn();
 }
 

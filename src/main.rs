@@ -3,11 +3,28 @@ mod error;
 mod render;
 
 use clap::{Parser, ValueEnum};
-use std::{fs, path::PathBuf};
+use std::{env, fs, path::PathBuf};
 
 use error::{MdvewError, Result};
 
 const HTML_PATH: &str = "/tmp/mdvew.html";
+
+fn home_dir() -> Option<PathBuf> {
+    #[cfg(unix)]
+    {
+        env::var("HOME").ok().map(PathBuf::from)
+    }
+    #[cfg(windows)]
+    {
+        env::var("USERPROFILE").ok().map(PathBuf::from)
+    }
+}
+
+fn browser_html_path() -> PathBuf {
+    home_dir()
+        .map(|home| home.join("mdvew").join("preview.html"))
+        .unwrap_or_else(|| PathBuf::from("/tmp/mdvew-preview.html"))
+}
 
 #[derive(Debug, Clone, Copy, Default, ValueEnum)]
 pub enum Theme {
@@ -65,7 +82,12 @@ fn main() -> Result<()> {
     fs::write(HTML_PATH, &full_html)?;
 
     if cli.browser {
-        display::open_in_browser(HTML_PATH);
+        let browser_path = browser_html_path();
+        if let Some(parent_dir) = browser_path.parent() {
+            fs::create_dir_all(parent_dir)?;
+        }
+        fs::write(&browser_path, &full_html)?;
+        display::open_in_browser(&browser_path);
         return Ok(());
     }
 
